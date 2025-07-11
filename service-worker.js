@@ -1,4 +1,8 @@
 self.addEventListener("install", e => {
+  self.skipWaiting();
+});
+
+self.addEventListener("install", e => {
   e.waitUntil(
     caches.open("tables-game-cache").then(cache => {
       return cache.addAll([
