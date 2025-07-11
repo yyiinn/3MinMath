@@ -15,14 +15,14 @@ function saveUsername() {
   username = document.getElementById('usernameInput').value.trim();
 
   if (username) {
-    // Load existing data or start fresh
+
     const savedData = localStorage.getItem("player_" + username);
     playerData = savedData
       ? JSON.parse(savedData)
       : { highScores: {}, unlockedTables: [2] };
 
       renderTimesTableButtons();
-    localStorage.setItem("username", username); // save current user
+    localStorage.setItem("username", username); 
     document.getElementById('username-screen').classList.remove('active');
     document.getElementById('start-menu').classList.add('active');
     updateButtonStates();
@@ -105,10 +105,10 @@ const bestScore = scoreValues.length > 0 ? Math.max(...scoreValues) : 0;
     return;
   }
 
-  // Sort players by score descending
+
   players.sort((a, b) => b.score - a.score);
 
-  // Display results
+
   let html = "";
   for (const player of players) {
     html += `<div><strong>${player.name}</strong> — Level: <span style="color:#4CAF50;">${player.level}</span> — Best Score: <span style="color:#ff5722;">${player.score}</span></div>`;
@@ -160,6 +160,7 @@ function resetGame() {
 const timerEl = document.getElementById('timer');
 timerEl.textContent = timer;
 
+
 if (timer <= 30) {
   document.getElementById('timer').classList.add('urgent');
 
@@ -178,6 +179,7 @@ if (timer <= 30) {
 
 
       if (score >= 10 && currentTable !== 'random') {        
+
         
         if (next && !playerData.unlockedTables.includes(next)) {
   playerData.unlockedTables.push(next);
@@ -197,7 +199,6 @@ localStorage.setItem("player_" + username, JSON.stringify(playerData));
 
       }
 
-
 const tableKey = currentTable.toString();
 const previousBest = playerData.highScores[tableKey] || 0;
 let newRecord = false;
@@ -207,7 +208,6 @@ if (score > previousBest && currentTable !== 'random') {
   localStorage.setItem(`player_${username}`, JSON.stringify(playerData));
   newRecord = true;
 }
-
 
 let message = `⏰ Time's up!<br><strong>${username}</strong><br>Your score: <strong>${score}</strong>`;
 if (currentTable !== 'random') {
@@ -222,7 +222,7 @@ style="margin-top:1rem; padding:0.5rem 1rem; font-size:1.2rem;">Return to Menu</
 document.getElementById('gameOver').style.display = 'block';
 document.getElementById('gameOver').innerHTML = message;
 
-
+      
     }
   }, 1000);
 }
@@ -323,6 +323,17 @@ if (isCorrect) {
 }
 
   document.getElementById('score').textContent = score;
+
+
+  const tableKey = currentTable.toString();
+  const currentBest = playerData.highScores[tableKey] || 0;
+  if (currentTable !== 'random' && score > currentBest) {
+    playerData.highScores[tableKey] = score;
+    localStorage.setItem('player_' + username, JSON.stringify(playerData));
+    console.log(`New high score for ×${currentTable}: ${score}`);
+  }
+
+  
   generateQuestion();
 }
 
