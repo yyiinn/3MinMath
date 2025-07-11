@@ -82,11 +82,13 @@
       </div>
     </div>
 
+
 <div id="profile-screen" class="screen">
   <h2>👤 <span id="profile-name"></span>'s Profile</h2>
   <div id="profile-stats" style="margin-top: 1rem; font-size: 1.1rem;"></div>
   <button onclick="returnToMenu()" style="margin-top: 2rem; padding: 0.8rem 1.5rem; font-size: 1.1rem;">Back to Menu</button>
 </div>
+
 
 <div id="highscore-screen" class="screen">
   <h2>🏆 Top Scores</h2>
@@ -114,6 +116,13 @@
   </div>
 <script src="game.js">
 
+</script>
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('service-worker.js').then(() => {
+      console.log("✅ Service worker registered");
+    });
+  }
 </script>
 </body>
 </html>
