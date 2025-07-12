@@ -1,6 +1,6 @@
 {
   "name": "3 Minute Maths",
-  "short_name": "3 Minute Math",
+  "short_name": "3Minute Math",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#ffffff",
