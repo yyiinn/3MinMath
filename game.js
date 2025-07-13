@@ -10,20 +10,23 @@ let streak = 0;
 let playerData = { highScores: {}, unlockedTables: [2] };
 let totalQuestions = 0;
 let flawlessBonusGiven = false;
+let correctAnswers = 0;
+let flawlessSoFar = true;
+let questionsAnswered = 0;
 
 
 function saveUsername() {
   username = document.getElementById('usernameInput').value.trim();
 
   if (username) {
-
+    // Load existing data or start fresh
     const savedData = localStorage.getItem("player_" + username);
     playerData = savedData
       ? JSON.parse(savedData)
       : { highScores: {}, unlockedTables: [2] };
 
       renderTimesTableButtons();
-    localStorage.setItem("username", username); 
+    localStorage.setItem("username", username); // save current user
     document.getElementById('username-screen').classList.remove('active');
     document.getElementById('start-menu').classList.add('active');
   
@@ -74,7 +77,7 @@ function returnToMenu() {
 
 function showHighScores() {
 
-
+  // ✅ Save current player data FIRST
   if (username && playerData) {
     localStorage.setItem("player_" + username, JSON.stringify(playerData));
   }
@@ -88,7 +91,7 @@ function showHighScores() {
 
  
   
-
+    // ✅ Now rebuild the list from localStorage
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);
     if (key.startsWith("player_")) {
@@ -110,7 +113,7 @@ function showHighScores() {
     }
   }
 
-
+  // Show fallback message if empty
   if (players.length === 0) {
     document.getElementById('highscore-list').innerHTML = "No player data yet.";
     return;
@@ -118,10 +121,10 @@ function showHighScores() {
 
 
 
-
+   // Sort by highest score
   players.sort((a, b) => b.score - a.score);
 
-
+  // Render scoreboard
 let html = "";
 for (const player of players) {
   const isCurrent = player.name === username;
@@ -169,6 +172,9 @@ function resetGame() {
   streak = 0;
   totalQuestions = 0;
   flawlessBonusGiven = false;
+  correctAnswers = 0;
+  flawlessSoFar = true;
+questionsAnswered = 0;
 
   const next = currentTable < 12 ? currentTable + 1 : null;
 
@@ -216,7 +222,7 @@ function resetGame() {
       }
 
       if (currentTable !== 'random' && streak === 12 && score === 24) {
-
+  // Only add bonus if flawless bonus wasn’t already awarded
   if (!flawlessBonusGiven) {
     score += 5;
     message += `<br><span style="color: yellow;">🎯 Perfect Score Bonus! +5</span>`;
@@ -225,7 +231,7 @@ function resetGame() {
 
 
 
-
+      // High score tracking
       const tableKey = currentTable.toString();
       const previousBest = playerData.highScores[tableKey] || 0;
       let newRecord = false;
@@ -236,7 +242,7 @@ function resetGame() {
         newRecord = true;
       }
 
-
+      // Game over message
       let message = `⏰ Time's up!<br><strong>${username}</strong><br>Your score: <strong>${score}</strong>`;
 
       if (currentTable !== 'random') {
@@ -247,18 +253,18 @@ function resetGame() {
         message += `<br><span style="color: gold; font-size: 1.5rem;">🏆 New High Score!</span>`;
       }
 
-
+      // Game over message already defined above...
 
 if (currentTable !== 'random' && flawlessBonusGiven) {
   message += `<br><span style="color: #ffd700; font-size: 1.3rem;">🌟 Perfect Table Mastery! You answered all 12 questions correctly first time!</span>`;
 }
 
 
-
+      // Check for perfect score bonus (no incorrect answers during session)
 if (currentTable !== 'random' && streak > 0 && streak * 2 === score) {
   score += 5;
   message += `<br><span style="color: green;">🎯 Perfect score bonus! +5</span>`;
-  document.getElementById('score').textContent = score; 
+  document.getElementById('score').textContent = score; // reflect bonus visually
 }
 
 
@@ -305,17 +311,17 @@ function shuffleArray(array) {
 }
 
 function generateQuestion() {
-
+  // If we're in fixed table mode, manage a pool of 12 questions
   if (currentTable !== 'random') {
     if (questionsPool.length === 0) {
-
+      // Generate 1–12 shuffled
       questionsPool = shuffleArray([...Array(12).keys()].map(i => i + 1));
     }
     const num1 = questionsPool.pop();
     const num2 = currentTable;
     currentQuestion = { a: num1, b: num2, answer: num1 * num2 };
   } else {
-
+    // Random mode as before
     const num1 = Math.floor(Math.random() * 12) + 1;
     const num2 = Math.floor(Math.random() * 12) + 1;
     currentQuestion = { a: num1, b: num2, answer: num1 * num2 };
@@ -339,7 +345,7 @@ function handleKey(key) {
       clickSound.currentTime = 0;
       clickSound.play();
     } catch (err) {
-
+      // Browser blocked it (not interacted yet) — ignore silently
     }
   }
 
@@ -356,89 +362,80 @@ function handleKey(key) {
 
 
 
-
 function checkAnswer() {
+  questionsAnswered++;
+
   const isCorrect = parseInt(currentInput) === currentQuestion.answer;
-  document.getElementById('feedback').textContent = isCorrect ? "✅ Correct!" : `❌ Oops! It was ${currentQuestion.answer}`;
-if (isCorrect) {
-  streak++;
-  score += 2;
+  document.getElementById('feedback').textContent = isCorrect
+    ? "✅ Correct!"
+    : `❌ Oops! It was ${currentQuestion.answer}`;
 
+  if (isCorrect) {
+    streak++;
+    score += 2;
+    correctAnswers++;
 
+    // Pulse score
+    const scoreEl = document.getElementById('score');
+    scoreEl.classList.add('pulse');
+    setTimeout(() => scoreEl.classList.remove('pulse'), 400);
 
-
-
-if (
-  currentTable !== 'random' &&
-  !flawlessBonusGiven &&
-  score === 24 && 
-  streak === 12   
-
-) {
-  flawlessBonusGiven = true;
-  score += 10;
-  document.getElementById('score').textContent = score;
-
-
-  const bonusPopup = document.createElement('div');
-  bonusPopup.innerHTML = `🎯 <strong>Flawless!</strong><br>You got all 12 questions correct first try!<br><span style="font-size:1.2rem; color:green;">+10 Bonus Points!</span>`;
-  bonusPopup.style.position = 'fixed';
-  bonusPopup.style.top = '30%';
-  bonusPopup.style.left = '50%';
-  bonusPopup.style.transform = 'translateX(-50%)';
-  bonusPopup.style.background = '#fff';
-  bonusPopup.style.color = '#333';
-  bonusPopup.style.padding = '1.5rem';
-  bonusPopup.style.borderRadius = '12px';
-  bonusPopup.style.boxShadow = '0 0 15px rgba(0,0,0,0.3)';
-  bonusPopup.style.zIndex = 9999;
-  bonusPopup.style.textAlign = 'center';
-  document.body.appendChild(bonusPopup);
-
-  document.getElementById('bonusSound')?.play();
-
-  setTimeout(() => bonusPopup.remove(), 4000);
-}
-
-
-
-
-
+    // CSS-based +2 splash
+    const bonusEl = document.getElementById('scoreBonus');
+    bonusEl.classList.add('show');
+    setTimeout(() => bonusEl.classList.remove('show'), 500);
+  } else {
+    streak = 0;
+    flawlessSoFar = false;
+  }
 
   const stars = "⭐".repeat(Math.min(streak, 3));
   document.getElementById('streak').textContent = `Streak: ${stars}`;
-
-
-  const confetti = document.createElement('div');
-  confetti.textContent = '🎉';
-  confetti.style.position = 'absolute';
-  confetti.style.fontSize = '3rem';
-  confetti.style.zIndex = 9999;
-  confetti.style.top = '50%';
-  confetti.style.left = '50%';
-  confetti.style.transform = 'translate(-50%, -50%)';
-  document.body.appendChild(confetti);
-  setTimeout(() => confetti.remove(), 1000);
-} else {
-  streak = 0;
-  document.getElementById('streak').textContent = '';
-}
-
   document.getElementById('score').textContent = score;
 
+  // Flawless bonus
+  if (
+    currentTable !== 'random' &&
+    flawlessSoFar &&
+    correctAnswers === 12 &&
+    questionsAnswered === 12 &&
+    !flawlessBonusGiven
+  ) {
+    flawlessBonusGiven = true;
+    score += 10;
+    document.getElementById('score').textContent = score;
+
+    const bonusPopup = document.createElement('div');
+    bonusPopup.innerHTML = `🎯 <strong>Flawless!</strong><br>You got the first 12 questions correct!<br><span style="font-size:1.2rem; color:green;">+10 Bonus Points!</span>`;
+    bonusPopup.style.position = 'fixed';
+    bonusPopup.style.top = '30%';
+    bonusPopup.style.left = '50%';
+    bonusPopup.style.transform = 'translateX(-50%)';
+    bonusPopup.style.background = '#fff';
+    bonusPopup.style.color = '#333';
+    bonusPopup.style.padding = '1.5rem';
+    bonusPopup.style.borderRadius = '12px';
+    bonusPopup.style.boxShadow = '0 0 15px rgba(0,0,0,0.3)';
+    bonusPopup.style.zIndex = 9999;
+    bonusPopup.style.textAlign = 'center';
+    document.body.appendChild(bonusPopup);
+
+    document.getElementById('bonusSound')?.play();
+    setTimeout(() => bonusPopup.remove(), 4000);
+  }
 
   const tableKey = currentTable.toString();
   const currentBest = playerData.highScores[tableKey] || 0;
   if (currentTable !== 'random' && score > currentBest) {
     playerData.highScores[tableKey] = score;
     localStorage.setItem('player_' + username, JSON.stringify(playerData));
-    console.log(`New high score for ×${currentTable}: ${score}`);
   }
-
-
 
   generateQuestion();
 }
+
+
+
 
 function renderTimesTableButtons() {
   const container = document.getElementById('table-buttons');
@@ -448,7 +445,7 @@ function renderTimesTableButtons() {
     const btn = document.createElement('button');
 
     if (i === 1) {
-
+      // Replace ×1 with Random
       btn.textContent = '🎲 Random';
       btn.className = 'table-button random';
       btn.onclick = () => startGame('random');

@@ -9,7 +9,7 @@ body {
   justify-content: center;
   overflow: hidden;
 
-
+  /* 🔵 New blue pastel background with dots */
   background: linear-gradient(145deg, #e3f0ff, #d0e4ff);
   background-image: 
     radial-gradient(#ffffff 1px, transparent 1px),
@@ -59,13 +59,29 @@ body {
   border-radius: 20px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 
-  background: 
-    radial-gradient(#ffffff 1px, transparent 1px),
-    radial-gradient(#ffffff 1px, transparent 1px),
-    linear-gradient(145deg, #c0d5ed, #bbd0ec);
-  background-size: 20px 20px;
-  background-position: 0 0, 10px 10px, center;
+  background-image: 
+    radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+    radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(145deg, #29828e, #0b3c48),
+    linear-gradient(to top left, rgba(255,255,255,0.02), rgba(0,0,0,0.05));
+
+  background-size: 
+    30px 30px,   /* dot layer 1 */
+    30px 30px,   /* dot layer 2 */
+    100% 100%,   /* main teal gradient */
+    100% 100%;   /* subtle texture overlay */
+
+  background-position: 
+    0 0, 
+    15px 15px, 
+    center, 
+    center;
+
+  background-repeat: repeat;
+  color: white;
 }
+
+
 
 
     .screen {
@@ -188,11 +204,12 @@ grid-template-columns: repeat(3, 1fr);  gap: 1rem;
       border-radius: 20px;
       z-index: 999;
     }
-    #score {
-      font-size: 2rem;
-      color: #ff5722;
-      font-weight: bold;
-    }
+
+    
+
+
+    
+
 
     
     #level-label {
@@ -211,11 +228,11 @@ grid-template-columns: repeat(3, 1fr);  gap: 1rem;
   color: black;
 }
 
-
+    /* Timer styles */
 #timer {
   font-size: 2rem;
   font-weight: bold;
-  color: #2b7a78;
+  color: #a5d826;
   transition: all 0.3s ease;
 }
 
@@ -226,11 +243,12 @@ grid-template-columns: repeat(3, 1fr);  gap: 1rem;
   animation: pulse 1s infinite;
   font-weight: bold;
 }
+/*    temp rem'd
 @keyframes pulse {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.2); }
 }
-
+*/
 
 
 .modal {
@@ -285,7 +303,7 @@ grid-template-columns: repeat(3, 1fr);  gap: 1rem;
   margin: 0.5rem;
   min-width: 60px;
     width: 100%;
-      height: 70px;           
+      height: 70px;           /* ✅ Fixed height */
   transition: background 0.3s ease, transform 0.2s;
 }
 
@@ -328,14 +346,14 @@ grid-template-columns: repeat(3, 1fr);  gap: 1rem;
   transform: translateX(-50%);
   font-size: 1.1rem;
   font-weight: bold;
-  color: #4CAF50;
+  color: #fbc02d;
 }
 
 .question-display {
   font-size: 3rem;
   font-weight: bold;
   text-align: center;
-  color: #2E8B57;
+  color: #c8b5e0;
 }
 
 
@@ -346,6 +364,7 @@ grid-template-columns: repeat(3, 1fr);  gap: 1rem;
   padding: 0.3rem;
   box-shadow: 0 0 10px gold;
   background: #fffbe6;
+  color: #0b3c48;
 }
 
 #level-label,
@@ -358,4 +377,126 @@ grid-template-columns: repeat(3, 1fr);  gap: 1rem;
   background: #fffde7;
   border: 2px solid #fdd835;
   box-shadow: 0 0 8px #fbc02d;
+}
+
+
+
+.score-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+}
+
+.score-container strong {
+  font-size: 1.3rem;
+  color: #fff;
+}
+
+
+#score {
+  display: inline-block;
+  min-width: 2ch;
+  text-align: right;
+
+  font-size: 2.8rem;   /* 🔼 Bigger score text */
+  color: #fbc02d;
+  font-weight: bold;
+  transition: transform 0.2s ease;
+}
+
+
+
+
+#scoreBonus {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: -1.5rem;
+  font-size: 1.2rem;
+  color: #4CAF50;
+  opacity: 0;
+  transition: opacity 0.3s, top 0.3s;
+  pointer-events: none;
+}
+
+#scoreBonus.show {
+  opacity: 1;
+  top: -2.2rem;
+}
+
+
+.top-bar .right {
+  flex-shrink: 0;
+  flex-grow: 0;
+  min-width: 140px; /* enough space for score + label */
+  align-items: flex-end;
+}
+
+
+#score.pulse {
+  animation: pulseScore 0.4s ease-in-out;
+}
+
+@keyframes pulseScore {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+
+.top-bar {
+  position: relative;
+  overflow: visible;
+}
+
+
+.score-box {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+  min-width: 100px;
+}
+
+
+
+
+.score-wrapper {
+  position: relative;
+  display: inline-block;
+  min-width: 3.5ch; /* enough space for 3 digits */
+  text-align: right;
+}
+
+
+
+.score-bonus {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%) translateY(0);
+  font-size: 1rem;
+  font-weight: bold;
+  color: #4CAF50;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: transform 0.4s ease, opacity 0.4s ease, visibility 0.4s ease;
+}
+
+
+.score-bonus.show {
+  transform: translateX(-50%) translateY(-25px);
+  opacity: 1;
+  visibility: visible;
+}
+
+
+.level-display {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #4CAF50;
+  text-align: center;
+  margin-bottom: 0.5rem;
 }

@@ -1,10 +1,11 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>3 Minute Maths</title>
-
+  <!--split css into own file-->
   <link rel="stylesheet" type="text/css" href="style.css">
 
   <link rel="manifest" href="manifest.json" />
@@ -27,7 +28,7 @@
       </div>
     </div>
 
-    <div id="start-menu" class="screen">    
+    <div id="start-menu" class="screen">   
       <h1 style="text-align:center;">3 Minute Maths</h1>
       <p style="text-align:center;">Choose a game mode:</p>
       <button onclick="showProfile()" style="margin-top: 1rem; padding: 0.5rem 1rem; font-size: 1rem;">View Profile</button>
@@ -36,65 +37,76 @@
 
         <div class="mode-buttons" id="table-buttons"></div>
         <div style="text-align: center; margin-top: 1rem;">
-
+       <!-- <button onclick="startGame('random')">Random</button>    -->
         </div>
 
 
     </div>
 
+ 
+    
     <div id="game-screen" class="screen">
+  <div class="header top-bar">
+    <div class="left">
+      <div><strong>Time left:</strong> <span id="timer">180</span></div>
+      <button onclick="returnToMenu()" class="menu-button">← Menu</button>
+    </div>
 
-        <div class="header top-bar">
-  <div class="left">
-    <div><strong>Time left:</strong> <span id="timer">180</span> seconds</div>
-    <button onclick="returnToMenu()" class="menu-button">← Menu</button>
-  </div>
-
+      <!-- NEW CENTER BLOCK -->
   <div class="center">
-  <div id="level-label"></div>
-</div>
+    <div id="level-label" class="level-display">×2</div>
+  </div>
 
   <div class="right">
-    <div><strong>Score:</strong> <span id="score">0</span></div>
-    <div id="streak" style="font-size: 1.5rem; color: gold; margin-top: 0.5rem;"></div>
-  </div>
-</div>
-<div id="countdown" style="font-size:2rem;"></div>
-
-
-      <div class="main-game-area">
-        <div class="left-panel">
-          <div class="question-display" id="question">Press a button to start!</div>
-          <div class="input-display" id="answer"></div>
-          <div class="footer" id="feedback"></div>
-        </div>
-        <div class="right-panel">
-          <div class="keypad">
-            <button class="key" onclick="handleKey('1')">1</button>
-            <button class="key" onclick="handleKey('2')">2</button>
-            <button class="key" onclick="handleKey('3')">3</button>
-            <button class="key" onclick="handleKey('4')">4</button>
-            <button class="key" onclick="handleKey('5')">5</button>
-            <button class="key" onclick="handleKey('6')">6</button>
-            <button class="key" onclick="handleKey('7')">7</button>
-            <button class="key" onclick="handleKey('8')">8</button>
-            <button class="key" onclick="handleKey('9')">9</button>
-            <button class="key clear" onclick="handleKey('C')">C</button>
-            <button class="key" onclick="handleKey('0')">0</button>
-            <button class="key submit" onclick="handleKey('⏎')">Submit</button>
-          </div>
-        </div>
+    <div class="score-container">
+      <strong>Score:</strong>
+      <div class="score-wrapper">
+        <span id="score">0</span>
+        <span id="scoreBonus" class="score-bonus">+2</span>
       </div>
     </div>
 
+      <div id="streak" style="font-size: 1.5rem; color: gold; margin-top: 0.5rem;"></div>
+    </div>
+  </div>
 
+  <div id="countdown" style="font-size:2rem;"></div>
+
+  <div class="main-game-area">
+    <div class="left-panel">
+      <div class="question-display" id="question">Press a button to start!</div>
+      <div class="input-display" id="answer"></div>
+      <div class="footer" id="feedback"></div>
+    </div>
+
+    <div class="right-panel">
+      <div class="keypad">
+        <button class="key" onclick="handleKey('1')">1</button>
+        <button class="key" onclick="handleKey('2')">2</button>
+        <button class="key" onclick="handleKey('3')">3</button>
+        <button class="key" onclick="handleKey('4')">4</button>
+        <button class="key" onclick="handleKey('5')">5</button>
+        <button class="key" onclick="handleKey('6')">6</button>
+        <button class="key" onclick="handleKey('7')">7</button>
+        <button class="key" onclick="handleKey('8')">8</button>
+        <button class="key" onclick="handleKey('9')">9</button>
+        <button class="key clear" onclick="handleKey('C')">C</button>
+        <button class="key" onclick="handleKey('0')">0</button>
+        <button class="key submit" onclick="handleKey('⏎')">Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <!-- Profile Screen -->
 <div id="profile-screen" class="screen">
   <h2>👤 <span id="profile-name"></span>'s Profile</h2>
   <div id="profile-stats" style="margin-top: 1rem; font-size: 1.1rem;"></div>
   <button onclick="returnToMenu()" style="margin-top: 2rem; padding: 0.8rem 1.5rem; font-size: 1.1rem;">Back to Menu</button>
 </div>
 
-
+<!-- High Scores Screen -->
 <div id="highscore-screen" class="screen">
   <h2>🏆 Top Scores</h2>
   <div id="highscore-list" style="margin-top: 1rem; font-size: 1.1rem;"></div>
@@ -114,6 +126,7 @@
     <button onclick="closeUnlock()">OK</button>
   </div>
 </div>
+
 
 
 <audio id="clickSound" preload="auto">
