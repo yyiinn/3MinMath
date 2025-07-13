@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>3 Minute Maths</title>
+
   <link rel="stylesheet" type="text/css" href="style.css">
 
   <link rel="manifest" href="manifest.json" />
@@ -26,7 +27,7 @@
       </div>
     </div>
 
-    <div id="start-menu" class="screen">  
+    <div id="start-menu" class="screen">    
       <h1 style="text-align:center;">3 Minute Maths</h1>
       <p style="text-align:center;">Choose a game mode:</p>
       <button onclick="showProfile()" style="margin-top: 1rem; padding: 0.5rem 1rem; font-size: 1rem;">View Profile</button>
@@ -48,13 +49,17 @@
     <div><strong>Time left:</strong> <span id="timer">180</span> seconds</div>
     <button onclick="returnToMenu()" class="menu-button">← Menu</button>
   </div>
+
+  <div class="center">
+  <div id="level-label"></div>
+</div>
+
   <div class="right">
     <div><strong>Score:</strong> <span id="score">0</span></div>
     <div id="streak" style="font-size: 1.5rem; color: gold; margin-top: 0.5rem;"></div>
   </div>
 </div>
 <div id="countdown" style="font-size:2rem;"></div>
-<div id="level-label"></div>
 
 
       <div class="main-game-area">
@@ -94,6 +99,9 @@
   <h2>🏆 Top Scores</h2>
   <div id="highscore-list" style="margin-top: 1rem; font-size: 1.1rem;"></div>
   <button onclick="returnToMenu()" style="margin-top: 2rem; padding: 0.8rem 1.5rem; font-size: 1.1rem;">Back to Menu</button>
+  <button onclick="resetAllScores()" style="margin-top: 1rem; padding: 0.6rem 1.2rem; background: #e74c3c; color: white; border: none; border-radius: 10px; font-size: 1rem; cursor: pointer;">
+  🗑️ Reset All Scores
+</button>
 </div>
 
     <div id="gameOver"></div>
@@ -110,6 +118,12 @@
 
 <audio id="clickSound" preload="auto">
   <source src="click.wav" type="audio/wav">
+</audio>
+<audio id="unlockSound" preload="auto">
+  <source src="cheer.wav" type="audio/wav">
+</audio>
+<audio id="bonusSound" preload="auto">
+  <source src="bonus.wav" type="audio/wav" />
 </audio>
 
 

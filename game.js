@@ -8,7 +8,8 @@ let interval = null;
 let username = '';
 let streak = 0;
 let playerData = { highScores: {}, unlockedTables: [2] };
-
+let totalQuestions = 0;
+let flawlessBonusGiven = false;
 
 
 function saveUsername() {
@@ -25,7 +26,7 @@ function saveUsername() {
     localStorage.setItem("username", username); 
     document.getElementById('username-screen').classList.remove('active');
     document.getElementById('start-menu').classList.add('active');
-    updateButtonStates();
+  
   } else {
     alert('Please enter your name!');
   }
@@ -35,12 +36,6 @@ function saveUsername() {
 
 
 
-function updateButtonStates() {
-  const available = playerData.unlockedTables || [];
-  document.getElementById('btn2').disabled = !available.includes(2);
-  document.getElementById('btn5').disabled = !available.includes(5);
-  document.getElementById('btn10').disabled = !available.includes(10);
-}
 
 
 
@@ -78,27 +73,43 @@ function returnToMenu() {
 
 
 function showHighScores() {
+
+
+  if (username && playerData) {
+    localStorage.setItem("player_" + username, JSON.stringify(playerData));
+  }
+
+
+
   document.getElementById('start-menu').classList.remove('active');
   document.getElementById('highscore-screen').classList.add('active');
 
   const players = [];
 
+ 
+  
+
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);
     if (key.startsWith("player_")) {
-      const name = key.replace("player_", "");
-      const data = JSON.parse(localStorage.getItem(key));
+      try {
+        const name = key.replace("player_", "");
+        const data = JSON.parse(localStorage.getItem(key));
+        const highestLevel = Math.max(...(data.unlockedTables || [2]));
+        const scores = Object.values(data.highScores || {}).filter(s => typeof s === 'number' && !isNaN(s));
+        const bestScore = scores.length > 0 ? Math.max(...scores) : 0;
 
-      const highestLevel = Math.max(...(data.unlockedTables || [2]));
-const scoreValues = Object.values(data.highScores || {}).filter(s => typeof s === 'number' && !isNaN(s));
-const bestScore = scoreValues.length > 0 ? Math.max(...scoreValues) : 0;
-      players.push({
-        name,
-        level: `×${highestLevel}`,
-        score: bestScore
-      });
+        players.push({
+          name,
+          level: `×${highestLevel}`,
+          score: bestScore
+        });
+      } catch (err) {
+        console.warn(`Skipping corrupt player data: ${key}`);
+      }
     }
   }
+
 
   if (players.length === 0) {
     document.getElementById('highscore-list').innerHTML = "No player data yet.";
@@ -106,16 +117,24 @@ const bestScore = scoreValues.length > 0 ? Math.max(...scoreValues) : 0;
   }
 
 
+
+
   players.sort((a, b) => b.score - a.score);
 
 
-  let html = "";
-  for (const player of players) {
-    html += `<div><strong>${player.name}</strong> — Level: <span style="color:#4CAF50;">${player.level}</span> — Best Score: <span style="color:#ff5722;">${player.score}</span></div>`;
-  }
+let html = "";
+for (const player of players) {
+  const isCurrent = player.name === username;
+  html += `<div class="${isCurrent ? 'highlighted-player' : ''}">
+    <strong>${isCurrent ? "👑 " : ""}${player.name}</strong> — 
+    Level: <span style="color:#4CAF50;">${player.level}</span> — 
+    Best Score: <span style="color:#ff5722;">${player.score}</span>
+  </div>`;
+}
 
   document.getElementById('highscore-list').innerHTML = html;
 }
+
 
 
 
@@ -148,6 +167,8 @@ function resetGame() {
   score = 0;
   timer = 180;
   streak = 0;
+  totalQuestions = 0;
+  flawlessBonusGiven = false;
 
   const next = currentTable < 12 ? currentTable + 1 : null;
 
@@ -155,82 +176,123 @@ function resetGame() {
   document.getElementById('timer').textContent = timer;
   document.getElementById('streak').textContent = '';
   clearInterval(interval);
+
   interval = setInterval(() => {
     timer--;
-const timerEl = document.getElementById('timer');
-timerEl.textContent = timer;
+    const timerEl = document.getElementById('timer');
+    timerEl.textContent = timer;
 
-
-if (timer <= 30) {
-  document.getElementById('timer').classList.add('urgent');
-
-  if (score > (playerData.highScores[currentTable] || 0)) {
-  playerData.highScores[currentTable] = score;
-}
-
-
-} else {
-  document.getElementById('timer').classList.remove('urgent');
-}
-
+    if (timer <= 30) {
+      timerEl.classList.add('urgent');
+    } else {
+      timerEl.classList.remove('urgent');
+    }
 
     if (timer <= 0) {
       clearInterval(interval);
 
+      // Unlock next level
+      if (score >= 10 && currentTable !== 'random') {
+        if (next && !playerData.unlockedTables.includes(next)) {
+          playerData.unlockedTables.push(next);
 
-      if (score >= 10 && currentTable !== 'random') {        
+          document.getElementById('unlock-text').textContent = `You unlocked the ×${next} level! Great job, ${username}!`;
+          document.getElementById('levelUnlock').style.display = 'flex';
+
+          const unlockSound = document.getElementById('unlockSound');
+          if (unlockSound && unlockSound.play) {
+            try {
+              unlockSound.currentTime = 0;
+              unlockSound.play();
+            } catch (e) {
+              console.warn("Unlock sound blocked or unavailable.");
+            }
+          }
 
         
-        if (next && !playerData.unlockedTables.includes(next)) {
-  playerData.unlockedTables.push(next);
-
-
-
-document.getElementById('unlock-text').textContent = `You unlocked the ×${next} level! Great job, ${username}!`;
-document.getElementById('levelUnlock').style.display = 'flex';
-document.getElementById('unlockSound').play();
-
-updateButtonStates();
-renderTimesTableButtons();
-
-localStorage.setItem("player_" + username, JSON.stringify(playerData));
-
-}
-
+          renderTimesTableButtons();
+          localStorage.setItem("player_" + username, JSON.stringify(playerData));
+        }
       }
 
-const tableKey = currentTable.toString();
-const previousBest = playerData.highScores[tableKey] || 0;
-let newRecord = false;
+      if (currentTable !== 'random' && streak === 12 && score === 24) {
 
-if (score > previousBest && currentTable !== 'random') {
-  playerData.highScores[tableKey] = score;
-  localStorage.setItem(`player_${username}`, JSON.stringify(playerData));
-  newRecord = true;
+  if (!flawlessBonusGiven) {
+    score += 5;
+    message += `<br><span style="color: yellow;">🎯 Perfect Score Bonus! +5</span>`;
+  }
 }
 
-let message = `⏰ Time's up!<br><strong>${username}</strong><br>Your score: <strong>${score}</strong>`;
-if (currentTable !== 'random') {
-  message += `<br>High score (×${currentTable}): <strong>${playerData.highScores[tableKey]}</strong>`;
-}
-if (newRecord) {
-  message += `<br><span style="color: gold; font-size: 1.5rem;">🏆 New High Score!</span>`;
-}
-message += `<br><button onclick="returnToMenu();document.getElementById('gameOver').style.display='none';" 
-style="margin-top:1rem; padding:0.5rem 1rem; font-size:1.2rem;">Return to Menu</button>`;
 
-document.getElementById('gameOver').style.display = 'block';
-document.getElementById('gameOver').innerHTML = message;
 
-      
+
+      const tableKey = currentTable.toString();
+      const previousBest = playerData.highScores[tableKey] || 0;
+      let newRecord = false;
+
+      if (score > previousBest && currentTable !== 'random') {
+        playerData.highScores[tableKey] = score;
+        localStorage.setItem(`player_${username}`, JSON.stringify(playerData));
+        newRecord = true;
+      }
+
+
+      let message = `⏰ Time's up!<br><strong>${username}</strong><br>Your score: <strong>${score}</strong>`;
+
+      if (currentTable !== 'random') {
+        message += `<br>High score (×${currentTable}): <strong>${playerData.highScores[tableKey]}</strong>`;
+      }
+
+      if (newRecord) {
+        message += `<br><span style="color: gold; font-size: 1.5rem;">🏆 New High Score!</span>`;
+      }
+
+
+
+if (currentTable !== 'random' && flawlessBonusGiven) {
+  message += `<br><span style="color: #ffd700; font-size: 1.3rem;">🌟 Perfect Table Mastery! You answered all 12 questions correctly first time!</span>`;
+}
+
+
+
+if (currentTable !== 'random' && streak > 0 && streak * 2 === score) {
+  score += 5;
+  message += `<br><span style="color: green;">🎯 Perfect score bonus! +5</span>`;
+  document.getElementById('score').textContent = score; 
+}
+
+
+
+
+      message += `<br><button onclick="returnToMenu();document.getElementById('gameOver').style.display='none';" 
+      style="margin-top:1rem; padding:0.5rem 1rem; font-size:1.2rem;">Return to Menu</button>`;
+
+      document.getElementById('gameOver').innerHTML = message;
+      document.getElementById('gameOver').style.display = 'block';
+
+      setTimeout(() => {
+        returnToMenu();
+        document.getElementById('gameOver').style.display = 'none';
+      }, 10000); // auto return to menu
     }
   }, 1000);
 }
 
 
+
+
+
+
+
+
+
+
+
+
 function closeUnlock() {
   document.getElementById('levelUnlock').style.display = 'none';
 }
+
 
 
 
@@ -241,9 +303,6 @@ function shuffleArray(array) {
   }
   return array;
 }
-
-
-
 
 function generateQuestion() {
 
@@ -262,10 +321,11 @@ function generateQuestion() {
     currentQuestion = { a: num1, b: num2, answer: num1 * num2 };
   }
 
-  document.getElementById('question').textContent = `${currentQuestion.a} × ${currentQuestion.b} = ?`;
+  document.getElementById('question').textContent = `${currentQuestion.a} × ${currentQuestion.b} =`;
   currentInput = "";
   document.getElementById('answer').textContent = "";
   document.getElementById('feedback').textContent = "";
+  totalQuestions++;
 }
 
 
@@ -295,12 +355,54 @@ function handleKey(key) {
 }
 
 
+
+
 function checkAnswer() {
   const isCorrect = parseInt(currentInput) === currentQuestion.answer;
   document.getElementById('feedback').textContent = isCorrect ? "✅ Correct!" : `❌ Oops! It was ${currentQuestion.answer}`;
 if (isCorrect) {
   streak++;
   score += 2;
+
+
+
+
+
+if (
+  currentTable !== 'random' &&
+  !flawlessBonusGiven &&
+  score === 24 && 
+  streak === 12   
+
+) {
+  flawlessBonusGiven = true;
+  score += 10;
+  document.getElementById('score').textContent = score;
+
+
+  const bonusPopup = document.createElement('div');
+  bonusPopup.innerHTML = `🎯 <strong>Flawless!</strong><br>You got all 12 questions correct first try!<br><span style="font-size:1.2rem; color:green;">+10 Bonus Points!</span>`;
+  bonusPopup.style.position = 'fixed';
+  bonusPopup.style.top = '30%';
+  bonusPopup.style.left = '50%';
+  bonusPopup.style.transform = 'translateX(-50%)';
+  bonusPopup.style.background = '#fff';
+  bonusPopup.style.color = '#333';
+  bonusPopup.style.padding = '1.5rem';
+  bonusPopup.style.borderRadius = '12px';
+  bonusPopup.style.boxShadow = '0 0 15px rgba(0,0,0,0.3)';
+  bonusPopup.style.zIndex = 9999;
+  bonusPopup.style.textAlign = 'center';
+  document.body.appendChild(bonusPopup);
+
+  document.getElementById('bonusSound')?.play();
+
+  setTimeout(() => bonusPopup.remove(), 4000);
+}
+
+
+
+
 
 
   const stars = "⭐".repeat(Math.min(streak, 3));
@@ -333,13 +435,14 @@ if (isCorrect) {
     console.log(`New high score for ×${currentTable}: ${score}`);
   }
 
-  
+
+
   generateQuestion();
 }
 
 function renderTimesTableButtons() {
   const container = document.getElementById('table-buttons');
-  container.innerHTML = ''; 
+  container.innerHTML = ''; // Clear previous
 
   for (let i = 1; i <= 12; i++) {
     const btn = document.createElement('button');
@@ -360,6 +463,23 @@ function renderTimesTableButtons() {
     container.appendChild(btn);
   }
 }
+
+
+function resetAllScores() {
+  const confirmReset = confirm("Are you sure you want to delete all player data and scores?");
+  if (confirmReset) {
+    for (let i = localStorage.length - 1; i >= 0; i--) {
+      const key = localStorage.key(i);
+      if (key.startsWith("player_")) {
+        localStorage.removeItem(key);
+      }
+    }
+    alert("All player scores have been reset.");
+    showHighScores(); // Refresh list
+  }
+}
+
+
 
 
 
