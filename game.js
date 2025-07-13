@@ -77,7 +77,7 @@ function returnToMenu() {
 
 function showHighScores() {
 
-  // ✅ Save current player data FIRST
+
   if (username && playerData) {
     localStorage.setItem("player_" + username, JSON.stringify(playerData));
   }
@@ -91,7 +91,7 @@ function showHighScores() {
 
  
   
-    // ✅ Now rebuild the list from localStorage
+
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);
     if (key.startsWith("player_")) {
@@ -113,7 +113,7 @@ function showHighScores() {
     }
   }
 
-  // Show fallback message if empty
+
   if (players.length === 0) {
     document.getElementById('highscore-list').innerHTML = "No player data yet.";
     return;
@@ -121,10 +121,10 @@ function showHighScores() {
 
 
 
-   // Sort by highest score
+
   players.sort((a, b) => b.score - a.score);
 
-  // Render scoreboard
+
 let html = "";
 for (const player of players) {
   const isCurrent = player.name === username;
@@ -222,7 +222,7 @@ questionsAnswered = 0;
       }
 
       if (currentTable !== 'random' && streak === 12 && score === 24) {
-  // Only add bonus if flawless bonus wasn’t already awarded
+
   if (!flawlessBonusGiven) {
     score += 5;
     message += `<br><span style="color: yellow;">🎯 Perfect Score Bonus! +5</span>`;
@@ -231,7 +231,7 @@ questionsAnswered = 0;
 
 
 
-      // High score tracking
+
       const tableKey = currentTable.toString();
       const previousBest = playerData.highScores[tableKey] || 0;
       let newRecord = false;
@@ -242,7 +242,7 @@ questionsAnswered = 0;
         newRecord = true;
       }
 
-      // Game over message
+
       let message = `⏰ Time's up!<br><strong>${username}</strong><br>Your score: <strong>${score}</strong>`;
 
       if (currentTable !== 'random') {
@@ -253,18 +253,18 @@ questionsAnswered = 0;
         message += `<br><span style="color: gold; font-size: 1.5rem;">🏆 New High Score!</span>`;
       }
 
-      // Game over message already defined above...
+
 
 if (currentTable !== 'random' && flawlessBonusGiven) {
   message += `<br><span style="color: #ffd700; font-size: 1.3rem;">🌟 Perfect Table Mastery! You answered all 12 questions correctly first time!</span>`;
 }
 
 
-      // Check for perfect score bonus (no incorrect answers during session)
+
 if (currentTable !== 'random' && streak > 0 && streak * 2 === score) {
   score += 5;
   message += `<br><span style="color: green;">🎯 Perfect score bonus! +5</span>`;
-  document.getElementById('score').textContent = score; // reflect bonus visually
+  document.getElementById('score').textContent = score; 
 }
 
 
@@ -279,7 +279,7 @@ if (currentTable !== 'random' && streak > 0 && streak * 2 === score) {
       setTimeout(() => {
         returnToMenu();
         document.getElementById('gameOver').style.display = 'none';
-      }, 10000); // auto return to menu
+      }, 10000); 
     }
   }, 1000);
 }
@@ -311,17 +311,17 @@ function shuffleArray(array) {
 }
 
 function generateQuestion() {
-  // If we're in fixed table mode, manage a pool of 12 questions
+
   if (currentTable !== 'random') {
     if (questionsPool.length === 0) {
-      // Generate 1–12 shuffled
+
       questionsPool = shuffleArray([...Array(12).keys()].map(i => i + 1));
     }
     const num1 = questionsPool.pop();
     const num2 = currentTable;
     currentQuestion = { a: num1, b: num2, answer: num1 * num2 };
   } else {
-    // Random mode as before
+
     const num1 = Math.floor(Math.random() * 12) + 1;
     const num2 = Math.floor(Math.random() * 12) + 1;
     currentQuestion = { a: num1, b: num2, answer: num1 * num2 };
@@ -345,7 +345,7 @@ function handleKey(key) {
       clickSound.currentTime = 0;
       clickSound.play();
     } catch (err) {
-      // Browser blocked it (not interacted yet) — ignore silently
+
     }
   }
 
@@ -375,12 +375,12 @@ function checkAnswer() {
     score += 2;
     correctAnswers++;
 
-    // Pulse score
+
     const scoreEl = document.getElementById('score');
     scoreEl.classList.add('pulse');
     setTimeout(() => scoreEl.classList.remove('pulse'), 400);
 
-    // CSS-based +2 splash
+
     const bonusEl = document.getElementById('scoreBonus');
     bonusEl.classList.add('show');
     setTimeout(() => bonusEl.classList.remove('show'), 500);
@@ -393,7 +393,7 @@ function checkAnswer() {
   document.getElementById('streak').textContent = `Streak: ${stars}`;
   document.getElementById('score').textContent = score;
 
-  // Flawless bonus
+
   if (
     currentTable !== 'random' &&
     flawlessSoFar &&
@@ -439,13 +439,13 @@ function checkAnswer() {
 
 function renderTimesTableButtons() {
   const container = document.getElementById('table-buttons');
-  container.innerHTML = ''; // Clear previous
+  container.innerHTML = ''; 
 
   for (let i = 1; i <= 12; i++) {
     const btn = document.createElement('button');
 
     if (i === 1) {
-      // Replace ×1 with Random
+
       btn.textContent = '🎲 Random';
       btn.className = 'table-button random';
       btn.onclick = () => startGame('random');
@@ -472,7 +472,7 @@ function resetAllScores() {
       }
     }
     alert("All player scores have been reset.");
-    showHighScores(); // Refresh list
+    showHighScores(); 
   }
 }
 

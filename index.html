@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>3 Minute Maths</title>
-  <!--split css into own file-->
+
   <link rel="stylesheet" type="text/css" href="style.css">
 
   <link rel="manifest" href="manifest.json" />
@@ -37,7 +37,7 @@
 
         <div class="mode-buttons" id="table-buttons"></div>
         <div style="text-align: center; margin-top: 1rem;">
-       <!-- <button onclick="startGame('random')">Random</button>    -->
+
         </div>
 
 
@@ -48,13 +48,14 @@
     <div id="game-screen" class="screen">
   <div class="header top-bar">
     <div class="left">
+          <div id="level-label" class="level-display">×2</div>
+
       <div><strong>Time left:</strong> <span id="timer">180</span></div>
       <button onclick="returnToMenu()" class="menu-button">← Menu</button>
     </div>
 
-      <!-- NEW CENTER BLOCK -->
+
   <div class="center">
-    <div id="level-label" class="level-display">×2</div>
   </div>
 
   <div class="right">
@@ -99,14 +100,14 @@
 </div>
 
 
-    <!-- Profile Screen -->
+
 <div id="profile-screen" class="screen">
   <h2>👤 <span id="profile-name"></span>'s Profile</h2>
   <div id="profile-stats" style="margin-top: 1rem; font-size: 1.1rem;"></div>
   <button onclick="returnToMenu()" style="margin-top: 2rem; padding: 0.8rem 1.5rem; font-size: 1.1rem;">Back to Menu</button>
 </div>
 
-<!-- High Scores Screen -->
+
 <div id="highscore-screen" class="screen">
   <h2>🏆 Top Scores</h2>
   <div id="highscore-list" style="margin-top: 1rem; font-size: 1.1rem;"></div>
@@ -136,7 +137,7 @@
   <source src="cheer.wav" type="audio/wav">
 </audio>
 <audio id="bonusSound" preload="auto">
-  <source src="bonus.wav" type="audio/wav" />
+  <source src="bonus.wav" type="audio/wav">
 </audio>
 
 

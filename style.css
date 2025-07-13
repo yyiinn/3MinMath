@@ -9,7 +9,7 @@ body {
   justify-content: center;
   overflow: hidden;
 
-  /* 🔵 New blue pastel background with dots */
+
   background: linear-gradient(145deg, #e3f0ff, #d0e4ff);
   background-image: 
     radial-gradient(#ffffff 1px, transparent 1px),
@@ -66,10 +66,10 @@ body {
     linear-gradient(to top left, rgba(255,255,255,0.02), rgba(0,0,0,0.05));
 
   background-size: 
-    30px 30px,   /* dot layer 1 */
-    30px 30px,   /* dot layer 2 */
-    100% 100%,   /* main teal gradient */
-    100% 100%;   /* subtle texture overlay */
+    30px 30px,   
+    30px 30px,   
+    100% 100%,   
+    100% 100%;   
 
   background-position: 
     0 0, 
@@ -146,14 +146,24 @@ grid-template-columns: repeat(3, 1fr);  gap: 1rem;
       font-size: 2rem;
       text-align: center;
     }
+
+
+    
     .input-display {
-      font-size: 1.5rem;
-      text-align: center;
-      padding: 0.5rem;
-      border: 2px solid #ccc;
-      border-radius: 10px;
-      min-height: 2.5rem;
-    }
+  font-size: 1.5rem;
+  text-align: center;
+  padding: 0.5rem;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  height: 2.5rem;
+  display: flex;                  
+  align-items: center;            
+  justify-content: center;        
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+
     .keypad {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -213,10 +223,10 @@ grid-template-columns: repeat(3, 1fr);  gap: 1rem;
 
     
     #level-label {
-  font-size: 1.6rem;
+  font-size: 1.4rem;
   font-weight: bold;
   color: #4CAF50;
-  margin-top: 0.5rem;
+  margin-top: 0.4rem;
 }
 
     #gameOver strong {
@@ -228,7 +238,7 @@ grid-template-columns: repeat(3, 1fr);  gap: 1rem;
   color: black;
 }
 
-    /* Timer styles */
+
 #timer {
   font-size: 2rem;
   font-weight: bold;
@@ -243,12 +253,7 @@ grid-template-columns: repeat(3, 1fr);  gap: 1rem;
   animation: pulse 1s infinite;
   font-weight: bold;
 }
-/*    temp rem'd
-@keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.2); }
-}
-*/
+
 
 
 .modal {
@@ -303,7 +308,7 @@ grid-template-columns: repeat(3, 1fr);  gap: 1rem;
   margin: 0.5rem;
   min-width: 60px;
     width: 100%;
-      height: 70px;           /* ✅ Fixed height */
+      height: 70px;           
   transition: background 0.3s ease, transform 0.2s;
 }
 
@@ -399,7 +404,7 @@ grid-template-columns: repeat(3, 1fr);  gap: 1rem;
   min-width: 2ch;
   text-align: right;
 
-  font-size: 2.8rem;   /* 🔼 Bigger score text */
+  font-size: 2.8rem;   
   color: #fbc02d;
   font-weight: bold;
   transition: transform 0.2s ease;
@@ -429,7 +434,7 @@ grid-template-columns: repeat(3, 1fr);  gap: 1rem;
 .top-bar .right {
   flex-shrink: 0;
   flex-grow: 0;
-  min-width: 140px; /* enough space for score + label */
+  min-width: 140px; 
   align-items: flex-end;
 }
 
@@ -465,7 +470,7 @@ grid-template-columns: repeat(3, 1fr);  gap: 1rem;
 .score-wrapper {
   position: relative;
   display: inline-block;
-  min-width: 3.5ch; /* enough space for 3 digits */
+  min-width: 3.5ch; 
   text-align: right;
 }
 
