@@ -1,5 +1,5 @@
 
-const CACHE_NAME = '3-minute-maths-v0.3';
+const CACHE_NAME = '3-minute-maths-v0.4';
 const ASSETS = [
   '/',
   '/index.html',
