@@ -271,6 +271,7 @@ grid-template-columns: repeat(3, 1fr);  gap: 1rem;
 
 .modal-content {
   background: white;
+  color: #333;
   border-radius: 16px;
   padding: 2rem;
   text-align: center;
