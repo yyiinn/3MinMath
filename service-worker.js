@@ -8,7 +8,11 @@ const ASSETS = [
   '/icon-192.png',
   '/icon-512.png',
   '/manifest.json',
-  '/click.wav'
+  '/click.wav',
+  '/cheer.wav',
+  '/bonus.wav'
+
+
 ];
 
 
