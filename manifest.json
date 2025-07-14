@@ -1,9 +1,9 @@
 {
   "name": "3 Minute Maths",
-  "short_name": "3Minute Maths",
+  "short_name": "Tables",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#ffffff",
+  "background_color": "#4f3482",
   "theme_color": "#4CAF50",
   "orientation": "portrait",
   "icons": [

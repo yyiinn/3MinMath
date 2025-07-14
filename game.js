@@ -7,7 +7,7 @@ let timer = 180;
 let interval = null;
 let username = '';
 let streak = 0;
-let playerData = { highScores: {}, unlockedTables: [2] };
+let playerData = { highScores: {}, unlockedTables: [2], audioEnabled: true  };
 let totalQuestions = 0;
 let flawlessBonusGiven = false;
 let correctAnswers = 0;
@@ -15,26 +15,35 @@ let flawlessSoFar = true;
 let questionsAnswered = 0;
 
 
+
+
+
+
 function saveUsername() {
   username = document.getElementById('usernameInput').value.trim();
 
   if (username) {
-    // Load existing data or start fresh
     const savedData = localStorage.getItem("player_" + username);
-    playerData = savedData
-      ? JSON.parse(savedData)
-      : { highScores: {}, unlockedTables: [2] };
+    const defaultData = { highScores: {}, unlockedTables: [2], audioEnabled: true };
 
-      renderTimesTableButtons();
-    localStorage.setItem("username", username); // save current user
+    playerData = savedData
+      ? { ...defaultData, ...JSON.parse(savedData) }
+      : defaultData;
+
+    renderTimesTableButtons();
+    localStorage.setItem("username", username); 
+
     document.getElementById('username-screen').classList.remove('active');
     document.getElementById('start-menu').classList.add('active');
-  
+
+    updateAudioButton(); 
   } else {
     alert('Please enter your name!');
   }
-}
 
+  updateAudioButton();
+
+}
 
 
 
@@ -77,7 +86,6 @@ function returnToMenu() {
 
 function showHighScores() {
 
-
   if (username && playerData) {
     localStorage.setItem("player_" + username, JSON.stringify(playerData));
   }
@@ -91,7 +99,6 @@ function showHighScores() {
 
  
   
-
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);
     if (key.startsWith("player_")) {
@@ -113,7 +120,6 @@ function showHighScores() {
     }
   }
 
-
   if (players.length === 0) {
     document.getElementById('highscore-list').innerHTML = "No player data yet.";
     return;
@@ -121,9 +127,7 @@ function showHighScores() {
 
 
 
-
   players.sort((a, b) => b.score - a.score);
-
 
 let html = "";
 for (const player of players) {
@@ -197,14 +201,14 @@ questionsAnswered = 0;
     if (timer <= 0) {
       clearInterval(interval);
 
-      // Unlock next level
-      if (score >= 10 && currentTable !== 'random') {
+      if (score >= 16 && currentTable !== 'random') {
         if (next && !playerData.unlockedTables.includes(next)) {
           playerData.unlockedTables.push(next);
 
           document.getElementById('unlock-text').textContent = `You unlocked the ×${next} level! Great job, ${username}!`;
           document.getElementById('levelUnlock').style.display = 'flex';
 
+          if (playerData.audioEnabled) {
           const unlockSound = document.getElementById('unlockSound');
           if (unlockSound && unlockSound.play) {
             try {
@@ -214,7 +218,7 @@ questionsAnswered = 0;
               console.warn("Unlock sound blocked or unavailable.");
             }
           }
-
+          }
         
           renderTimesTableButtons();
           localStorage.setItem("player_" + username, JSON.stringify(playerData));
@@ -222,13 +226,11 @@ questionsAnswered = 0;
       }
 
       if (currentTable !== 'random' && streak === 12 && score === 24) {
-
   if (!flawlessBonusGiven) {
     score += 5;
     message += `<br><span style="color: yellow;">🎯 Perfect Score Bonus! +5</span>`;
   }
 }
-
 
 
 
@@ -242,7 +244,6 @@ questionsAnswered = 0;
         newRecord = true;
       }
 
-
       let message = `⏰ Time's up!<br><strong>${username}</strong><br>Your score: <strong>${score}</strong>`;
 
       if (currentTable !== 'random') {
@@ -254,11 +255,9 @@ questionsAnswered = 0;
       }
 
 
-
 if (currentTable !== 'random' && flawlessBonusGiven) {
   message += `<br><span style="color: #ffd700; font-size: 1.3rem;">🌟 Perfect Table Mastery! You answered all 12 questions correctly first time!</span>`;
 }
-
 
 
 if (currentTable !== 'random' && streak > 0 && streak * 2 === score) {
@@ -311,17 +310,14 @@ function shuffleArray(array) {
 }
 
 function generateQuestion() {
-
   if (currentTable !== 'random') {
     if (questionsPool.length === 0) {
-
       questionsPool = shuffleArray([...Array(12).keys()].map(i => i + 1));
     }
     const num1 = questionsPool.pop();
     const num2 = currentTable;
     currentQuestion = { a: num1, b: num2, answer: num1 * num2 };
   } else {
-
     const num1 = Math.floor(Math.random() * 12) + 1;
     const num2 = Math.floor(Math.random() * 12) + 1;
     currentQuestion = { a: num1, b: num2, answer: num1 * num2 };
@@ -340,12 +336,11 @@ function handleKey(key) {
   if (timer <= 0) return;
 
   const clickSound = document.getElementById('clickSound');
-  if (clickSound && clickSound.readyState >= 2) {
+if (playerData.audioEnabled && clickSound && clickSound.readyState >= 2) {
     try {
       clickSound.currentTime = 0;
       clickSound.play();
     } catch (err) {
-
     }
   }
 
@@ -375,11 +370,9 @@ function checkAnswer() {
     score += 2;
     correctAnswers++;
 
-
     const scoreEl = document.getElementById('score');
     scoreEl.classList.add('pulse');
     setTimeout(() => scoreEl.classList.remove('pulse'), 400);
-
 
     const bonusEl = document.getElementById('scoreBonus');
     bonusEl.classList.add('show');
@@ -392,7 +385,6 @@ function checkAnswer() {
   const stars = "⭐".repeat(Math.min(streak, 3));
   document.getElementById('streak').textContent = `Streak: ${stars}`;
   document.getElementById('score').textContent = score;
-
 
   if (
     currentTable !== 'random' &&
@@ -420,9 +412,20 @@ function checkAnswer() {
     bonusPopup.style.textAlign = 'center';
     document.body.appendChild(bonusPopup);
 
-    document.getElementById('bonusSound')?.play();
+
+    const bonusSound = document.getElementById('bonusSound');
+    if (playerData.audioEnabled && bonusSound && bonusSound.play) {
+      try {
+        bonusSound.currentTime = 0;
+        bonusSound.play();
+      } catch (e) {
+        console.warn("Bonus sound blocked or unavailable.");
+      }
+    }
+
     setTimeout(() => bonusPopup.remove(), 4000);
   }
+  
 
   const tableKey = currentTable.toString();
   const currentBest = playerData.highScores[tableKey] || 0;
@@ -445,7 +448,6 @@ function renderTimesTableButtons() {
     const btn = document.createElement('button');
 
     if (i === 1) {
-
       btn.textContent = '🎲 Random';
       btn.className = 'table-button random';
       btn.onclick = () => startGame('random');
@@ -486,4 +488,21 @@ if ('serviceWorker' in navigator) {
       .then(() => console.log("✅ Service Worker Registered"))
       .catch(err => console.log("❌ SW registration failed:", err));
   });
+}
+
+
+
+
+function toggleAudio() {
+  playerData.audioEnabled = !playerData.audioEnabled;
+  localStorage.setItem("player_" + username, JSON.stringify(playerData));
+  updateAudioButton();
+}
+
+
+function updateAudioButton() {
+  const btn = document.getElementById("audio-toggle");
+  if (btn) {
+    btn.textContent = playerData.audioEnabled ? "🔊 Sound: On" : "🔇 Sound: Off";
+  }
 }

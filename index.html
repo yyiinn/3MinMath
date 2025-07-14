@@ -5,12 +5,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>3 Minute Maths</title>
-
   <link rel="stylesheet" type="text/css" href="style.css">
 
   <link rel="manifest" href="manifest.json" />
 <meta name="theme-color" content="#4CAF50">
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;700&display=swap" rel="stylesheet">
 
 </head>
 <body>
@@ -37,7 +36,11 @@
 
         <div class="mode-buttons" id="table-buttons"></div>
         <div style="text-align: center; margin-top: 1rem;">
+        </div>
 
+        
+        <div style="margin-top: 1rem;">
+        <button id="audio-toggle" onclick="toggleAudio()" class="menu-button">🔊 Sound: On</button>
         </div>
 
 
@@ -53,7 +56,6 @@
       <div><strong>Time left:</strong> <span id="timer">180</span></div>
       <button onclick="returnToMenu()" class="menu-button">← Menu</button>
     </div>
-
 
   <div class="center">
   </div>
@@ -100,13 +102,11 @@
 </div>
 
 
-
 <div id="profile-screen" class="screen">
   <h2>👤 <span id="profile-name"></span>'s Profile</h2>
   <div id="profile-stats" style="margin-top: 1rem; font-size: 1.1rem;"></div>
   <button onclick="returnToMenu()" style="margin-top: 2rem; padding: 0.8rem 1.5rem; font-size: 1.1rem;">Back to Menu</button>
 </div>
-
 
 <div id="highscore-screen" class="screen">
   <h2>🏆 Top Scores</h2>
@@ -137,7 +137,7 @@
   <source src="cheer.wav" type="audio/wav">
 </audio>
 <audio id="bonusSound" preload="auto">
-  <source src="bonus.wav" type="audio/wav">
+  <source src="bonus.wav" type="audio/wav" />
 </audio>
 
 

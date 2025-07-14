@@ -1,5 +1,5 @@
 
-const CACHE_NAME = '3-minute-maths-v0.4';
+const CACHE_NAME = '3-minute-maths-v0.5';
 const ASSETS = [
   '/',
   '/index.html',
@@ -11,10 +11,7 @@ const ASSETS = [
   '/click.wav',
   '/cheer.wav',
   '/bonus.wav'
-
-
 ];
-
 
 self.addEventListener('install', e => {
   e.waitUntil(
@@ -24,7 +21,6 @@ self.addEventListener('install', e => {
   );
   self.skipWaiting();
 });
-
 
 self.addEventListener('activate', e => {
   e.waitUntil(
@@ -36,7 +32,6 @@ self.addEventListener('activate', e => {
   );
   clients.claim();
 });
-
 
 self.addEventListener('fetch', e => {
   e.respondWith(
